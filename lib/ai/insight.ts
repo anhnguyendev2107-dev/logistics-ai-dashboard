@@ -53,7 +53,7 @@ function buildPool(): Caller[] {
     pool.push({
       name: `google[${i}]`,
       call: (prompt) =>
-        generateObject({ model: provider("gemini-2.0-flash"), prompt, ...baseArgs }),
+        generateObject({ model: provider("gemini-2.5-flash"), prompt, ...baseArgs }),
     });
   }
   for (const [i, k] of readKeys(...KEY_ALIASES.anthropic).entries()) {

@@ -16,7 +16,7 @@ interface ProviderEntry {
   call: () => Promise<{ object: RouterOutput }>;
 }
 
-const GOOGLE_MODEL = "gemini-2.0-flash";
+const GOOGLE_MODEL = "gemini-2.5-flash";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
 const OPENAI_MODEL = "gpt-4o-mini";
 
