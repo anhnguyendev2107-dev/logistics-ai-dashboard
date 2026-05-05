@@ -6,12 +6,20 @@ An AI-powered analytics dashboard for a logistics client. The system supports th
 - **Diagnostic** — natural-language Q&A backed by deterministic computation.
 - **Predictive & Prescriptive** — demand forecasting with inventory recommendations.
 
-> **Live demo**: _add your Vercel URL here after deploy_
+> 🚀 **Live demo**: **<https://logistics-ai-dashboard-ten.vercel.app>**
+>
+> | Page | URL |
+> |---|---|
+> | Dashboard (KPIs + charts) | [`/`](https://logistics-ai-dashboard-ten.vercel.app) |
+> | Natural-language chat | [`/chat`](https://logistics-ai-dashboard-ten.vercel.app/chat) |
+> | Architecture diagrams | [`/architecture`](https://logistics-ai-dashboard-ten.vercel.app/architecture) |
+> | Health / provider status | [`/api/health`](https://logistics-ai-dashboard-ten.vercel.app/api/health) |
 >
 > **Sample questions to try in `/chat`:**
 > 1. _Which carrier has the highest delay rate?_
 > 2. _Show weekly delivered orders for Q4 2025_
 > 3. _Predict total orders for the next 4 weeks_
+> 4. _Predict crayon demand for the next 3 months_
 
 ---
 
@@ -20,8 +28,8 @@ An AI-powered analytics dashboard for a logistics client. The system supports th
 ### Local
 
 ```bash
-git clone <repo>
-cd logictics-agent
+git clone https://github.com/anhnguyendev2107-dev/logistics-ai-dashboard.git
+cd logistics-ai-dashboard
 npm install
 cp .env.local.example .env.local      # then paste at least one API key
 npm run dev                            # http://localhost:3000

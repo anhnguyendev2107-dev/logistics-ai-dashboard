@@ -13,7 +13,8 @@ import { KpiCard } from "@/components/KpiCard";
 import { QueryChart } from "@/components/ChartRenderer";
 import { StackedDeliveryChart } from "@/components/StackedDeliveryChart";
 import { DashboardFilters } from "@/components/DashboardFilters";
-import { TopNav } from "@/components/TopNav";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Boxes } from "lucide-react";
 import { formatNumber, formatPercent } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -38,10 +39,23 @@ export default async function DashboardPage({
 
   return (
     <div className="min-h-screen">
-      <TopNav variant="dashboard" />
+      {/* Floating utility row */}
+      <div className="fixed right-6 top-6 z-30 flex items-center gap-2">
+        <ThemeToggle />
+      </div>
+      <div className="fixed left-6 top-6 z-30 flex items-center gap-2">
+        <Link href="/" className="group flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm transition-transform group-hover:scale-105">
+            <Boxes className="h-4 w-4" strokeWidth={2.25} />
+          </span>
+          <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Logos
+          </span>
+        </Link>
+      </div>
 
       <div className="hero-gradient">
-        <main className="mx-auto w-full max-w-7xl px-6 pb-12 pt-10">
+        <main className="mx-auto w-full max-w-7xl px-6 pb-12 pt-20">
           {/* Hero */}
           <section className="mb-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
@@ -165,9 +179,14 @@ export default async function DashboardPage({
             <span>
               Dataset · <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono dark:bg-zinc-900">data/mock_logistics_data.csv</code> · 2025-01-01 → 2025-12-30 · read-only
             </span>
-            <Link href="/api/health" className="font-mono hover:text-zinc-600 dark:hover:text-zinc-300">
-              /api/health
-            </Link>
+            <span className="flex items-center gap-3">
+              <Link href="/architecture" className="hover:text-zinc-600 dark:hover:text-zinc-300">
+                Architecture →
+              </Link>
+              <Link href="/api/health" className="font-mono hover:text-zinc-600 dark:hover:text-zinc-300">
+                /api/health
+              </Link>
+            </span>
           </footer>
         </main>
       </div>
