@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUp, Sparkles, BarChart3, TrendingUp, Clock } from "lucide-react";
 import { ForecastChart, QueryChart } from "./ChartRenderer";
-import { ExplainDrawer } from "./ExplainDrawer";
+import { ExplainPanel, ExplainTrigger, type ExplainBlock } from "./ExplainDrawer";
 import { ForecastDetails } from "./ForecastDetails";
 import { HistorySidebar } from "./HistorySidebar";
 import { cn, formatNumber, formatPercent } from "@/lib/utils";
@@ -29,6 +29,7 @@ export function ChatPanel() {
   const [busy, setBusy] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeExplainTurnId, setActiveExplainTurnId] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   const active = useMemo(
@@ -36,6 +37,18 @@ export function ChatPanel() {
     [conversations, activeId],
   );
   const turns = active?.turns ?? [];
+
+  const activeExplainBlock = useMemo<ExplainBlock | null>(() => {
+    if (!activeExplainTurnId) return null;
+    const turn = turns.find((t) => t.id === activeExplainTurnId);
+    if (!turn || !turn.response) return null;
+    return buildExplainBlock(turn.id, turn.response);
+  }, [turns, activeExplainTurnId]);
+
+  // Close explain panel when switching conversations.
+  useEffect(() => {
+    setActiveExplainTurnId(null);
+  }, [activeId]);
 
   // Initial load from localStorage
   useEffect(() => {
@@ -139,7 +152,7 @@ export function ChatPanel() {
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className="flex min-h-0 flex-1 overflow-hidden">
       <HistorySidebar
         conversations={conversations}
         activeId={activeId}
@@ -147,15 +160,21 @@ export function ChatPanel() {
         onNew={newChat}
         onDelete={deleteConv}
       />
-      <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 sm:px-6">
-        <div className="flex flex-1 flex-col">
-          <div className="flex-1 overflow-y-auto py-8">
+      <div className="mx-auto flex w-full max-w-5xl min-w-0 flex-1 flex-col px-4 sm:px-8">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 overflow-y-auto py-6">
             {turns.length === 0 ? (
               <EmptyState />
             ) : (
               <div className="space-y-6">
                 {turns.map((t) => (
-                  <Turn key={t.id} turn={t} onPick={send} />
+                  <Turn
+                    key={t.id}
+                    turn={t}
+                    onPick={send}
+                    activeExplainTurnId={activeExplainTurnId}
+                    onOpenExplain={setActiveExplainTurnId}
+                  />
                 ))}
               </div>
             )}
@@ -167,7 +186,7 @@ export function ChatPanel() {
               e.preventDefault();
               send(input);
             }}
-            className="sticky bottom-0 z-10 -mx-4 mt-2 border-t border-zinc-200/60 bg-zinc-50/80 px-4 pb-4 pt-3 backdrop-blur-xl sm:-mx-6 sm:px-6 dark:border-zinc-800/60 dark:bg-zinc-950/80"
+            className="sticky bottom-0 z-10 -mx-4 mt-2 border-t border-zinc-200/60 bg-zinc-50/80 px-4 pb-4 pt-3 backdrop-blur-xl sm:-mx-8 sm:px-8 dark:border-zinc-800/60 dark:bg-zinc-950/80"
           >
             <SuggestionStrip onPick={send} disabled={busy} />
             <div className="mt-3 flex items-end gap-2">
@@ -197,8 +216,51 @@ export function ChatPanel() {
           </form>
         </div>
       </div>
+      {activeExplainBlock ? (
+        <ExplainPanel
+          block={activeExplainBlock}
+          onClose={() => setActiveExplainTurnId(null)}
+        />
+      ) : null}
     </div>
   );
+}
+
+/* ─────────────  Build an ExplainBlock from any AskResponse  ───────────── */
+
+function buildExplainBlock(turnId: string, response: AskResponse): ExplainBlock | null {
+  const base = {
+    turn_id: turnId,
+    provider: response.provider,
+    latency_ms: response.latency_ms,
+    rationale: response.rationale,
+    attempts: response.attempts,
+  };
+  if (response.kind === "query" && response.query) {
+    return {
+      ...base,
+      rows_used: response.query.total_rows_used,
+      plan: response.query.plan,
+      sample_rows: response.query.filtered_sample,
+    };
+  }
+  if (response.kind === "forecast" && response.forecast) {
+    return {
+      ...base,
+      rows_used: response.forecast.rows_used,
+      plan: response.forecast.plan,
+      sample_rows: [],
+    };
+  }
+  if (response.kind === "clarify" && response.clarify) {
+    return {
+      ...base,
+      rows_used: 0,
+      plan: response.clarify,
+      sample_rows: [],
+    };
+  }
+  return null;
 }
 
 function EmptyState() {
@@ -246,7 +308,17 @@ function SuggestionStrip({
   );
 }
 
-function Turn({ turn, onPick }: { turn: ChatTurn; onPick: (q: string) => void }) {
+function Turn({
+  turn,
+  onPick,
+  activeExplainTurnId,
+  onOpenExplain,
+}: {
+  turn: ChatTurn;
+  onPick: (q: string) => void;
+  activeExplainTurnId: string | null;
+  onOpenExplain: (turnId: string) => void;
+}) {
   const r = turn.response;
   return (
     <div className="space-y-3">
@@ -259,14 +331,41 @@ function Turn({ turn, onPick }: { turn: ChatTurn; onPick: (q: string) => void })
         <ThinkingBubble />
       ) : (
         <div className="fade-up rounded-2xl rounded-tl-md border border-zinc-200/70 bg-white/80 p-5 backdrop-blur-sm dark:border-zinc-800/70 dark:bg-zinc-950/70">
-          <ResponseBody response={r} onPick={onPick} />
+          <ResponseBody
+            turnId={turn.id}
+            response={r}
+            onPick={onPick}
+            active={activeExplainTurnId === turn.id}
+            onOpenExplain={onOpenExplain}
+          />
         </div>
       )}
     </div>
   );
 }
 
-function ResponseBody({ response, onPick }: { response: AskResponse; onPick: (q: string) => void }) {
+function ResponseBody({
+  turnId,
+  response,
+  onPick,
+  active,
+  onOpenExplain,
+}: {
+  turnId: string;
+  response: AskResponse;
+  onPick: (q: string) => void;
+  active: boolean;
+  onOpenExplain: (turnId: string) => void;
+}) {
+  const explainBlock = buildExplainBlock(turnId, response);
+  const explainTrigger = explainBlock ? (
+    <ExplainTrigger
+      block={explainBlock}
+      active={active}
+      onOpen={() => onOpenExplain(turnId)}
+    />
+  ) : null;
+
   if (response.kind === "error") {
     return (
       <div className="text-sm text-red-600 dark:text-red-400">
@@ -275,7 +374,11 @@ function ResponseBody({ response, onPick }: { response: AskResponse; onPick: (q:
     );
   }
   if (response.kind === "decline" && response.decline) {
-    return <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">{response.decline.message}</p>;
+    return (
+      <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+        {response.decline.message}
+      </p>
+    );
   }
   if (response.kind === "clarify" && response.clarify) {
     return (
@@ -292,17 +395,7 @@ function ResponseBody({ response, onPick }: { response: AskResponse; onPick: (q:
             </button>
           ))}
         </div>
-        <ExplainDrawer
-          block={{
-            provider: response.provider,
-            latency_ms: response.latency_ms,
-            rationale: response.rationale,
-            rows_used: 0,
-            plan: response.clarify,
-            sample_rows: [],
-            attempts: response.attempts,
-          }}
-        />
+        {explainTrigger}
       </>
     );
   }
@@ -314,17 +407,7 @@ function ResponseBody({ response, onPick }: { response: AskResponse; onPick: (q:
         </div>
         <QueryChart result={response.query} />
         {response.insight ? <InsightCallout text={response.insight} /> : null}
-        <ExplainDrawer
-          block={{
-            provider: response.provider,
-            latency_ms: response.latency_ms,
-            rationale: response.rationale,
-            rows_used: response.query.total_rows_used,
-            plan: response.query.plan,
-            sample_rows: response.query.filtered_sample,
-            attempts: response.attempts,
-          }}
-        />
+        {explainTrigger}
       </>
     );
   }
@@ -345,17 +428,7 @@ function ResponseBody({ response, onPick }: { response: AskResponse; onPick: (q:
           </>
         )}
         {response.insight ? <InsightCallout text={response.insight} /> : null}
-        <ExplainDrawer
-          block={{
-            provider: response.provider,
-            latency_ms: response.latency_ms,
-            rationale: response.rationale,
-            rows_used: response.forecast.rows_used,
-            plan: response.forecast.plan,
-            sample_rows: [],
-            attempts: response.attempts,
-          }}
-        />
+        {explainTrigger}
       </>
     );
   }

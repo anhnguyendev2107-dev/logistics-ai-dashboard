@@ -1,8 +1,10 @@
 "use client";
 
-import { Plus, Trash2, MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { Plus, Trash2, MessageSquare, Boxes, ArrowLeft } from "lucide-react";
 import { groupByRecency, type Conversation } from "@/lib/chat/history";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface HistorySidebarProps {
   conversations: Conversation[];
@@ -21,7 +23,27 @@ export function HistorySidebar({
 }: HistorySidebarProps) {
   const groups = groupByRecency(conversations);
   return (
-    <aside className="hidden h-[calc(100vh-3.5rem)] w-64 flex-shrink-0 flex-col border-r border-zinc-200/60 bg-white/40 backdrop-blur-md lg:flex dark:border-zinc-800/60 dark:bg-zinc-950/40">
+    <aside className="hidden h-full w-64 flex-shrink-0 flex-col border-r border-zinc-200/60 bg-white/40 backdrop-blur-md lg:flex dark:border-zinc-800/60 dark:bg-zinc-950/40">
+      {/* Top: brand + back */}
+      <div className="flex items-center justify-between border-b border-zinc-200/60 px-3 py-3 dark:border-zinc-800/60">
+        <Link href="/" className="group flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm transition-transform group-hover:scale-105">
+            <Boxes className="h-4 w-4" strokeWidth={2.25} />
+          </span>
+          <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Logos
+          </span>
+        </Link>
+        <Link
+          href="/"
+          title="Back to dashboard"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+
+      {/* New chat */}
       <div className="p-3">
         <button
           onClick={onNew}
@@ -31,6 +53,8 @@ export function HistorySidebar({
           New chat
         </button>
       </div>
+
+      {/* Conversation list */}
       <div className="flex-1 overflow-y-auto px-3 pb-3">
         {groups.length === 0 ? (
           <p className="mt-6 px-2 text-center text-xs text-zinc-400">
@@ -57,6 +81,14 @@ export function HistorySidebar({
             </div>
           ))
         )}
+      </div>
+
+      {/* Bottom: theme toggle */}
+      <div className="flex items-center justify-between border-t border-zinc-200/60 px-3 py-2.5 dark:border-zinc-800/60">
+        <span className="text-[10px] uppercase tracking-[0.08em] text-zinc-400 dark:text-zinc-500">
+          Theme
+        </span>
+        <ThemeToggle />
       </div>
     </aside>
   );
