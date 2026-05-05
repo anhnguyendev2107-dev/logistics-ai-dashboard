@@ -17,6 +17,7 @@ import {
 import type { QueryResult } from "@/lib/analytics/queryExecutor";
 import type { ForecastResponse } from "@/lib/forecasting/runForecast";
 import { formatNumber, formatPercent } from "@/lib/utils";
+import { regionLabel } from "@/lib/data/regions";
 
 const COLOR = {
   primary: "#6366f1", // indigo-500
@@ -36,6 +37,11 @@ function formatY(metric: string, v: number) {
   if (isPercent(metric)) return formatPercent(v);
   if (metric === "avg_delivery_days") return `${v.toFixed(2)}d`;
   return formatNumber(v);
+}
+
+function formatX(dimension: string | null | undefined, x: string): string {
+  if (dimension === "region") return regionLabel(x);
+  return x;
 }
 
 function ChartTooltip({
@@ -141,14 +147,15 @@ export function QueryChart({ result }: { result: QueryResult }) {
           <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" vertical={false} />
           <XAxis
             dataKey="x"
-            tick={{ fontSize: 10, fill: "currentColor" }}
+            tick={{ fontSize: 11, fill: "currentColor" }}
             className="text-zinc-500"
             interval={0}
-            angle={-30}
+            angle={plan.dimension === "region" ? 0 : -30}
             dy={10}
             height={50}
             axisLine={false}
             tickLine={false}
+            tickFormatter={(x) => formatX(plan.dimension, String(x))}
           />
           <YAxis
             tick={{ fontSize: 10, fill: "currentColor" }}

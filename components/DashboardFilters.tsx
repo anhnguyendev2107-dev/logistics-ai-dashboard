@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { REGION_FLAG } from "@/lib/data/regions";
 
 const REGIONS = ["", "US-E", "US-W", "US-C", "EU", "UK"];
 const PRESETS: { label: string; from?: string; to?: string }[] = [
@@ -67,7 +68,7 @@ export function DashboardFilters() {
         >
           {REGIONS.map((r) => (
             <option key={r} value={r}>
-              {r === "" ? "All" : r}
+              {r === "" ? "🌍 All" : `${REGION_FLAG[r] ?? ""} ${r}`}
             </option>
           ))}
         </select>

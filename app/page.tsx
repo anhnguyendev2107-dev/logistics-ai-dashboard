@@ -14,8 +14,11 @@ import { QueryChart } from "@/components/ChartRenderer";
 import { StackedDeliveryChart } from "@/components/StackedDeliveryChart";
 import { DashboardFilters } from "@/components/DashboardFilters";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { GithubIcon } from "@/components/GithubIcon";
 import { Boxes } from "lucide-react";
 import { formatNumber, formatPercent } from "@/lib/utils";
+
+const REPO_URL = "https://github.com/anhnguyendev2107-dev/logistics-ai-dashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +44,16 @@ export default async function DashboardPage({
     <div className="min-h-screen">
       {/* Floating utility row */}
       <div className="fixed right-6 top-6 z-30 flex items-center gap-2">
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noreferrer"
+          title="View source on GitHub"
+          aria-label="View source on GitHub"
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        >
+          <GithubIcon className="h-4 w-4" />
+        </a>
         <ThemeToggle />
       </div>
       <div className="fixed left-6 top-6 z-30 flex items-center gap-2">
@@ -186,6 +199,15 @@ export default async function DashboardPage({
               <Link href="/api/health" className="font-mono hover:text-zinc-600 dark:hover:text-zinc-300">
                 /api/health
               </Link>
+              <a
+                href={REPO_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 hover:text-zinc-600 dark:hover:text-zinc-300"
+              >
+                <GithubIcon className="h-3 w-3" />
+                Source
+              </a>
             </span>
           </footer>
         </main>

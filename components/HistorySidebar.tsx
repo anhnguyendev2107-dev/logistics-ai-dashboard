@@ -5,6 +5,9 @@ import { Plus, Trash2, MessageSquare, Boxes, ArrowLeft } from "lucide-react";
 import { groupByRecency, type Conversation } from "@/lib/chat/history";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
+import { GithubIcon } from "./GithubIcon";
+
+const REPO_URL = "https://github.com/anhnguyendev2107-dev/logistics-ai-dashboard";
 
 interface HistorySidebarProps {
   conversations: Conversation[];
@@ -83,11 +86,18 @@ export function HistorySidebar({
         )}
       </div>
 
-      {/* Bottom: theme toggle */}
+      {/* Bottom: github + theme */}
       <div className="flex items-center justify-between border-t border-zinc-200/60 px-3 py-2.5 dark:border-zinc-800/60">
-        <span className="text-[10px] uppercase tracking-[0.08em] text-zinc-400 dark:text-zinc-500">
-          Theme
-        </span>
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noreferrer"
+          title="View source on GitHub"
+          className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+        >
+          <GithubIcon className="h-3 w-3" />
+          Source
+        </a>
         <ThemeToggle />
       </div>
     </aside>

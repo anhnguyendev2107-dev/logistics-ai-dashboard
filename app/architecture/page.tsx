@@ -16,6 +16,9 @@ import {
 import { MermaidDiagram } from "@/components/MermaidDiagram";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TableOfContents, type TocGroup } from "@/components/TableOfContents";
+import { GithubIcon } from "@/components/GithubIcon";
+
+const REPO_URL = "https://github.com/anhnguyendev2107-dev/logistics-ai-dashboard";
 
 export const metadata = {
   title: "Architecture · Logos",
@@ -261,8 +264,19 @@ export default function ArchitecturePage() {
           <div className="flex-1 overflow-y-auto pr-2">
             <TableOfContents groups={tocGroups} />
           </div>
-          <div className="border-t border-zinc-200/60 pt-3 text-[10px] text-zinc-400 dark:border-zinc-800/60">
-            Architecture v1 · {new Date().getFullYear()}
+          <div className="border-t border-zinc-200/60 pt-3 dark:border-zinc-800/60">
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              <GithubIcon className="h-3 w-3" />
+              View source
+            </a>
+            <div className="mt-2 text-[10px] text-zinc-400 dark:text-zinc-500">
+              Architecture v1 · {new Date().getFullYear()}
+            </div>
           </div>
         </aside>
 
