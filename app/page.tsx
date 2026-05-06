@@ -1,13 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import {
-  Package,
-  CheckCircle2,
-  AlertTriangle,
-  Truck,
-  Clock,
-  Sparkles,
-} from "lucide-react";
+import { Package, CheckCircle2, AlertTriangle, Truck, Clock, Sparkles } from "lucide-react";
 import { buildDashboardSnapshot } from "@/lib/analytics/dashboard";
 import { KpiCard } from "@/components/KpiCard";
 import { QueryChart } from "@/components/ChartRenderer";
@@ -43,7 +36,7 @@ export default async function DashboardPage({
   return (
     <div className="min-h-screen">
       {/* Floating utility row */}
-      <div className="fixed right-6 top-6 z-30 flex items-center gap-2">
+      <div className="fixed top-6 right-6 z-30 flex items-center gap-2">
         <a
           href={REPO_URL}
           target="_blank"
@@ -56,7 +49,7 @@ export default async function DashboardPage({
         </a>
         <ThemeToggle />
       </div>
-      <div className="fixed left-6 top-6 z-30 flex items-center gap-2">
+      <div className="fixed top-6 left-6 z-30 flex items-center gap-2">
         <Link href="/" className="group flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm transition-transform group-hover:scale-105">
             <Boxes className="h-4 w-4" strokeWidth={2.25} />
@@ -68,12 +61,12 @@ export default async function DashboardPage({
       </div>
 
       <div className="hero-gradient">
-        <main className="mx-auto w-full max-w-7xl px-6 pb-12 pt-20">
+        <main className="mx-auto w-full max-w-7xl px-6 pt-20 pb-12">
           {/* Hero */}
           <section className="mb-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-indigo-600 dark:text-indigo-400">
+                <div className="flex items-center gap-2 text-xs font-medium tracking-[0.12em] text-indigo-600 uppercase dark:text-indigo-400">
                   <Sparkles className="h-3.5 w-3.5" />
                   Operational overview
                 </div>
@@ -90,7 +83,7 @@ export default async function DashboardPage({
               </div>
               <Link
                 href="/chat"
-                className="group hidden items-center gap-2 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-indigo-500/20 transition-all hover:shadow-indigo-500/40 sm:flex"
+                className="group flex items-center gap-2 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 px-5 py-2.5 text-sm font-medium text-white shadow-md shadow-indigo-500/20 transition-all hover:shadow-indigo-500/40"
               >
                 <Sparkles className="h-4 w-4" />
                 Ask the data
@@ -151,12 +144,7 @@ export default async function DashboardPage({
 
           {/* Charts grid */}
           <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <ChartCard
-              title="Order volume"
-              subtitle="By ISO week"
-              accent="indigo"
-              delayMs={300}
-            >
+            <ChartCard title="Order volume" subtitle="By ISO week" accent="indigo" delayMs={300}>
               <QueryChart result={snap.weekly_volume} />
             </ChartCard>
 
@@ -190,13 +178,20 @@ export default async function DashboardPage({
 
           <footer className="mt-16 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200/60 pt-6 text-xs text-zinc-400 dark:border-zinc-800/60">
             <span>
-              Dataset · <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono dark:bg-zinc-900">data/mock_logistics_data.csv</code> · 2025-01-01 → 2025-12-30 · read-only
+              Dataset ·{" "}
+              <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono dark:bg-zinc-900">
+                data/mock_logistics_data.csv
+              </code>{" "}
+              · 2025-01-01 → 2025-12-30 · read-only
             </span>
             <span className="flex items-center gap-3">
               <Link href="/architecture" className="hover:text-zinc-600 dark:hover:text-zinc-300">
                 Architecture →
               </Link>
-              <Link href="/api/health" className="font-mono hover:text-zinc-600 dark:hover:text-zinc-300">
+              <Link
+                href="/api/health"
+                className="font-mono hover:text-zinc-600 dark:hover:text-zinc-300"
+              >
                 /api/health
               </Link>
               <a
